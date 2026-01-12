@@ -1,0 +1,27 @@
+{
+  "name": "zen-attendance",
+  "version": "1.0.0",
+  "description": "Modern attendance tracking system that is anti-hack and zen-standard",
+  "homepage": "https://github.com/zenkiet/zen-attendance#readme",
+  "bugs": {
+    "url": "https://github.com/zenkiet/zen-attendance/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zenkiet/zen-attendance.git"
+  },
+  "license": "MIT",
+  "author": "",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r run build",
+    "dev": "pnpm -r run dev",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r run test",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.8",
+    "husky": "^9.1.7"
+  }
+}
