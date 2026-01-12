@@ -1,0 +1,80 @@
+services:
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: zen_server
+  #   ports:
+  #     - "8080:8080"
+  #   env_file:
+  #     - apps/server/.env
+  #   environment:
+  #     # Override with Docker network hostnames
+  #     - DATABASE_URL=postgres://zen_user:zen_password@postgres:5432/zen_attendance?sslmode=disable
+  #     - REDIS_ADDR=redis:6379
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_started
+  #   networks:
+  #     - zen_network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "/app/server", "--health"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 10s
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: zen_postgres
+    environment:
+      POSTGRES_USER: zen_user
+      POSTGRES_PASSWORD: zen_password
+      POSTGRES_DB: zen_attendance
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    network_mode: "host"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zen_user -d zen_attendance"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    shm_size: 128mb
+
+  redis:
+    image: redis:8-alpine
+    container_name: zen_redis
+    command: redis-server --requirepass zen_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    network_mode: "host"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+
+# networks:
+#   zen_network:
+#     driver: bridge
+#     name: zen_network
+
+volumes:
+  postgres_data:
+    driver: local
+    name: zen_postgres_data
+  redis_data:
+    driver: local
+    name: zen_redis_data
